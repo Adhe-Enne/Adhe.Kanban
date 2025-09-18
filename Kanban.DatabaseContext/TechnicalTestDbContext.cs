@@ -1,8 +1,6 @@
 ﻿using Kanban.DatabaseContext.Configurations;
 using Kanban.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Net.NetworkInformation;
-using System.Reflection;
 using Task = Kanban.Domain.Models.Task;
 
 namespace Kanban.DatabaseContext
@@ -27,7 +25,7 @@ namespace Kanban.DatabaseContext
             modelBuilder.ApplyConfiguration(new BoardConfigurations());
             modelBuilder.ApplyConfiguration(new ColumnConfigurations());
             modelBuilder.ApplyConfiguration(new TaskConfigurations());
-        }        
+        }
         // Opcional: override SaveChanges para actualizar UpdatedAt automáticamente
         public override int SaveChanges()
         {
@@ -58,5 +56,5 @@ namespace Kanban.DatabaseContext
         }
     }
 }
-    
+
 
