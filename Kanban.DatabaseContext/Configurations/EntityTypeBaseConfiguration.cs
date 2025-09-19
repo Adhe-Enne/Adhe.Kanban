@@ -8,8 +8,14 @@ namespace Kanban.DatabaseContext.Configurations
     {
         public void Configure(EntityTypeBuilder<T> builder)
         {
-            builder.Property(u => u.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            builder.Property(u => u.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+            // Usar tipo timestamp para compatibilidad con MySQL y valores por defecto
+            builder.Property(u => u.CreatedAt)
+                   .HasColumnType("timestamp")
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.Property(u => u.UpdatedAt)
+                   .HasColumnType("timestamp")
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 
             ConfigurateProperties(builder);
             ConfigurateConstraints(builder);

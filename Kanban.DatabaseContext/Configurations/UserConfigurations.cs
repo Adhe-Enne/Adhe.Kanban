@@ -55,6 +55,11 @@ namespace Kanban.DatabaseContext.Configurations
             builder.Property(u => u.City)
                    .HasMaxLength(30)
                    .HasColumnType("varchar(30)");
+
+            builder.Property(u => u.Role)
+             .HasConversion<string>()   // Guarda como "User" o "Admin"
+             .HasMaxLength(20)
+             .IsRequired();
         }
 
         protected override void ConfigurateTableName(EntityTypeBuilder<User> builder)

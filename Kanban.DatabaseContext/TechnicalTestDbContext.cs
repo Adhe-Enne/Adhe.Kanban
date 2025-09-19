@@ -7,10 +7,11 @@ namespace Kanban.DatabaseContext
 {
     public class TechnicalTestDbContext : DbContext
     {
-        public TechnicalTestDbContext(DbContextOptions options) : base(options)
+        public TechnicalTestDbContext(DbContextOptions<TechnicalTestDbContext> options) : base(options)
         {
 
         }
+        public TechnicalTestDbContext() { }
 
         public DbSet<Task> Tasks => Set<Task>();
         public DbSet<Column> Columns => Set<Column>();

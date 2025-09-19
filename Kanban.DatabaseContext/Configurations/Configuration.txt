@@ -1,0 +1,5 @@
+dotnet ef migrations add InitialCreate -p Kanban.DatabaseContext -s technical-tests-backend-ssr
+
+dotnet ef database update -p Kanban.DatabaseContext -s technical-tests-backend-ssr
+
+ef migrations remove

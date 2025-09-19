@@ -30,7 +30,7 @@ namespace Kanban.DatabaseContext.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Description")
@@ -50,7 +50,7 @@ namespace Kanban.DatabaseContext.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
@@ -71,7 +71,7 @@ namespace Kanban.DatabaseContext.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool>("IsActive")
@@ -87,7 +87,7 @@ namespace Kanban.DatabaseContext.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
@@ -114,7 +114,7 @@ namespace Kanban.DatabaseContext.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Description")
@@ -141,7 +141,7 @@ namespace Kanban.DatabaseContext.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
@@ -171,7 +171,7 @@ namespace Kanban.DatabaseContext.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("DNI")
@@ -205,9 +205,14 @@ namespace Kanban.DatabaseContext.Migrations
                         .HasMaxLength(26)
                         .HasColumnType("varchar(26)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
