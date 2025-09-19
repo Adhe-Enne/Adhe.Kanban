@@ -15,7 +15,6 @@ namespace Kanban.Business.Services
 
         public async Task<TEntity> AddAsync(TEntity entity)
         {
-            // Aquí podrías agregar validaciones o reglas de negocio antes de guardar
             return await _repository.AddAsync(entity);
         }
 

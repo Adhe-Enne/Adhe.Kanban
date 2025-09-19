@@ -1,11 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kanban.Business.Services;
+﻿using Kanban.Business.Services;
 using Kanban.Business.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Kanban.Business
 {
@@ -14,8 +9,12 @@ namespace Kanban.Business
         public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IJwtService,JwtService >();
-            //services.AddScoped<IService, Service>();
+            services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IBoardService, BoardService>();
+            services.AddScoped<ITaskService, TaskService>();
+            //services.AddScoped<IStateService, StateService<>();
+
             // Add business services here
         }
     }

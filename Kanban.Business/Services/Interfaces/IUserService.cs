@@ -1,9 +1,5 @@
 ﻿using Kanban.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace Kanban.Business.Services.Interfaces
 {
@@ -12,5 +8,8 @@ namespace Kanban.Business.Services.Interfaces
         Task<User?> GetByEmailAsync(string email);
         Task<User> RegisterAsync(User user, string password);
         Task<User?> AuthenticateAsync(string email, string password);
+        Task UpdateRoleAsync(Guid userId, string newRole);
+         Task ActivateUserAsync(Guid userId);
+         Task InactivateUserAsync(Guid userId);
     }
 }
