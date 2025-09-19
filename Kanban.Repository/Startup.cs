@@ -1,12 +1,8 @@
-﻿using Kanban.Repository.Interfaces;
+﻿using Kanban.Domain.Models;
+using Kanban.Repository.Interfaces;
 using Kanban.Repository.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using Task = Kanban.Domain.Models.Task;
 namespace Kanban.Repository
 {
     public static class Startup
@@ -14,8 +10,8 @@ namespace Kanban.Repository
         public static void AddRepository(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
-            //services.AddScoped<IService, Service>();
-            // Add business services here
+            services.AddScoped<IRepository<Board>, Repository<Board>>();
+            services.AddScoped<IRepository<Task>, Repository<Task>>();
         }
     }
 }
