@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Kanban.Domain.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kanban.Domain.Models
 {
@@ -6,10 +7,9 @@ namespace Kanban.Domain.Models
     {
         [EmailAddress]
         public string Email { get; set; } = default!;
-
         [DataType(DataType.Password)]
-        public byte[] PasswordHash { get; set; }
-        public byte[] PasswordSalt { get; set; }
+        public byte[]? PasswordHash { get; set; }
+        public byte[]? PasswordSalt { get; set; }
         public string? Name { get; set; } = default!;
         public string? DNI { get; set; } = default!;
         public string? PhoneNumber { get; set; } = default!;
@@ -17,6 +17,7 @@ namespace Kanban.Domain.Models
         public string? City { get; set; } = default!;
         public string? Country { get; set; } = default!;
         public List<Task> Tasks { get; set; } = new List<Task>(); 
-        public ICollection<Board> Boards { get; set; } = new List<Board>();
+        public ICollection<Board> Boards { get; set; } = new List<Board>(); 
+        public UserRole Role { get; set; } = UserRole.User;
     }
 }
