@@ -1,13 +1,14 @@
 using FluentValidation;
+// Agrega el using necesario para la extensión de validación automática de FluentValidation
+using FluentValidation.AspNetCore;
 using Kanban.Business;
-using Kanban.Repository;
 using Kanban.DatabaseContext;
+using Kanban.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
 using System.Text;
+using technical_tests_backend_ssr.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,26 +19,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//configurar Entity Framework Core con MySQL
-//string connectionString = "";
-//builder.Services.AddDbContext<TechnicalTestDbContext>(opt => 
-//    opt.UseMySql(connectionString,
-//        new MySqlServerVersion(ServerVersion.AutoDetect(connectionString))
-//    )
-//);
+string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' no está configurada.");
+}
 
-builder.Services.AddServices();
+builder.Services.AddContext(connectionString);
 builder.Services.AddRepository();
+builder.Services.AddServices();
 
-builder.Services.AddDbContext<TechnicalTestDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 43)),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure()
-    )
-);
-//configurar automapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddAuthentication(options =>
@@ -63,6 +55,13 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+//builder.Services.AddValidatorsFromAssembly(assembly: Assembly.GetExecutingAssembly());
+builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<TaskRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<RoleRequestValidator>();
+
+builder.Services.AddFluentValidationAutoValidation();
 var allowedOrigin = builder.Configuration.GetValue<string>("allowedOrigins")!;
 
 builder.Services.AddCors(opciones =>
@@ -78,7 +77,6 @@ builder.Services.AddCors(opciones =>
     });
 });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -88,10 +86,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.Logger.LogInformation("Application started");
+
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

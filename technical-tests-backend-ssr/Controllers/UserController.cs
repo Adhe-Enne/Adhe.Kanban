@@ -1,66 +1,130 @@
 ﻿using AutoMapper;
+using Kanban.Business.Exceptions;
 using Kanban.Business.Services.Interfaces;
-using Kanban.Domain.Models;
+using Kanban.Contracts.Constants;
+using Kanban.Contracts.Dto.Request;
+using Kanban.Contracts.Dto.Response;
+using Kanban.Contracts.Results;
+using Kanban.Contracts.Results.Interfaces;
+using Kanban.Domain.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using technical_tests_backend_ssr.Dto.Request;
-using technical_tests_backend_ssr.Dto.Response;
-
+using System.Net;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace technical_tests_backend_ssr.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    public class UserController(IUserService userService, ILogger<UserController> logger, IMapper mapper) : BaseController(logger, mapper)
     {
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
-        private readonly IJwtService _jwtService; // Servicio de generación de JWT
-
-        public UserController(IUserService userService, IMapper mapper, IJwtService jwtService)
-        {
-            _userService = userService;
-            _mapper = mapper;
-            _jwtService = jwtService;
-        }
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRequestDto dto)
-        {
-            var userEntity = _mapper.Map<User>(dto);
-            var user = await _userService.RegisterAsync(userEntity, dto.Password);
-            var response = _mapper.Map<UserResponseDto>(user);
-            return Ok(response);
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(UserRequestDto dto)
-        {
-            User? user = await _userService.AuthenticateAsync(dto.Email, dto.Password);
-
-            if (user == null) return Unauthorized();
-
-            var token = _jwtService.GenerateToken(user);
-            var response = _mapper.Map<UserResponseDto>(user);
-            return Ok(new { user = response, token });
-        }
+        private readonly IUserService _userService = userService;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<ApiResult<UserResponse>>> GetAll()
         {
-            var users = await _userService.GetAllAsync();
-            var response = _mapper.Map<IEnumerable<UserResponseDto>>(users);
-            return Ok(response);
+            IApiResult<List<UserResponse>> result = new ApiResult<List<UserResponse>>();
+
+            _log.LogInformation(Messages.USER_GETALL);
+
+            try
+            {
+                var users = await _userService.GetAllAsync();
+                result.Data = _mapper.Map<List<UserResponse>>(users);
+                if (result.Data.Any())
+                {
+                    result.Set(HandleSuccess(string.Format(Messages.USER_GETALL_OK, result.Data.Count), HttpStatusCode.OK));
+                }
+                else
+                {
+                    result.Set(HandleSuccess(Messages.USER_NOFOUND_OK, HttpStatusCode.NoContent));
+                }
+
+            }
+            catch (BusinessException ex)
+            {
+                result.Set(HandleServiceException(ex));
+            }
+            catch (Exception ex)
+            {
+                result.Set(HandleException(ex, HttpStatusCode.InternalServerError, Messages.ERROR));
+            }
+
+            return ResponseApi(result);
         }
 
-        [Authorize]
-        [HttpGet("me")]
-        public async Task<IActionResult> Me()
+        [HttpPut("/role/{id}")]
+        public async Task<ActionResult<IApiResult>> UpdateRole(Guid id, [FromBody] UpdateRoleRequest dto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return Ok(new { UserId = userId });
+            IApiResult result = new ApiResult();
+
+            _log.LogInformation(Messages.USER_UPDATEROLE, id, dto.Role);
+
+            try
+            {
+                await _userService.UpdateRoleAsync(id, dto.Role);
+                result.Set(HandleSuccess(Messages.USER_UPDATEROLE_OK, HttpStatusCode.NoContent));
+            }
+            catch (BusinessException ex)
+            {
+                result.Set(HandleServiceException(ex));
+            }
+            catch (Exception ex)
+            {
+                result.Set(HandleException(ex, HttpStatusCode.InternalServerError, Messages.ERROR));
+            }
+
+            return ResponseApi(result);
+        }
+
+        [HttpPut("/activate-user/{id}")]
+        public async Task<ActionResult<IApiResult>> Activate(Guid id)
+        {
+            var result = new ApiResult();
+
+            _log.LogInformation(Messages.USER_ACTIVATING, id);
+
+            try
+            {
+                await _userService.ActivateUserAsync(id);
+                result.Set(HandleSuccess(Messages.USER_ACTIVATE_OK, HttpStatusCode.NoContent));
+            }
+            catch (BusinessException ex)
+            {
+                result.Set(HandleServiceException(ex));
+            }
+            catch (Exception ex)
+            {
+                result.Set(HandleException(ex, HttpStatusCode.InternalServerError, Messages.ERROR));
+            }
+
+            return ResponseApi(result);
+        }
+
+
+        [HttpDelete("/inactivate/{id}")]
+        public async Task<ActionResult<IApiResult>> InactiveUser(Guid id)
+        {
+            var result = new ApiResult();
+
+            _log.LogInformation(Messages.USER_DELETING, id);
+
+            try
+            {
+                await _userService.InactivateUserAsync(id);
+                result.Set(HandleSuccess(Messages.USER_DELETING_OK, HttpStatusCode.NoContent));
+            }
+            catch (BusinessException ex)
+            {
+                result.Set(HandleServiceException(ex));
+            }
+            catch (Exception ex)
+            {
+                result.Set(HandleException(ex, HttpStatusCode.InternalServerError, Messages.ERROR));
+            }
+
+            return ResponseApi(result);
         }
     }
 }
